@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Custom Pull To Refresh"
 include(":app")
- 
+include(":CustomPullToRefresh")

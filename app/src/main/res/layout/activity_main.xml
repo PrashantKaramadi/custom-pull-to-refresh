@@ -7,21 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.pk.custompulltorefresh.views.CustomPullToRefreshLayout
-        android:id="@+id/pullToRefreshLayout"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:text="Hello World!"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </com.pk.custompulltorefresh.views.CustomPullToRefreshLayout>
+        android:layout_height="200dp"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

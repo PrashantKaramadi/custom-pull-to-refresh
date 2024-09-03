@@ -1,4 +1,4 @@
-package com.pk.custompulltorefresh.views
+package com.pk.custompulltorefresh
 
 
 import android.content.Context
@@ -11,7 +11,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.core.view.ViewCompat
-import com.pk.custompulltorefresh.R
 
 class CustomPullToRefreshLayout @JvmOverloads constructor(
     context: Context,
