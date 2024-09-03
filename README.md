@@ -19,7 +19,7 @@ CustomPullToRefreshLayout is a customizable pull-to-refresh layout for Android. 
 Gradle
 ```bash
  dependencies {
-    implementation 'com.pk:custompulltorefresh:1.0.0'
+    implementation("com.github.PrashantKaramadi:custom-pull-to-refresh:v1.0.2")
 }
 ```
 Usage
