@@ -1,11 +1,9 @@
 package com.pk.custompulltorefresh
 
-
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.GestureDetector
-import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -24,31 +22,36 @@ class CustomPullToRefreshLayout @JvmOverloads constructor(
     private var onRefreshListener: (() -> Unit)? = null
     private val gestureDetector: GestureDetector
 
-    private var progressBarGravity: Int = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    private var progressBarColor: Int = Color.BLACK
-    private var progressBarSize: Int = 48 // Default size in dp
-    private var progressBarStyle: Int = 0 // Use 0 for spinner and 1 for horizontal
-    private var customProgressDrawableRes: Int? = null // Custom drawable resource
+    // Default values for maximum pull-down offset and space between ProgressBar and contentView
+    private var maxPullDownOffset = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        50f,
+        resources.displayMetrics
+    )
+    private var spaceBetweenProgressBarAndContent = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        20f,
+        resources.displayMetrics
+    )
 
     init {
+        // Inflate the custom view layout and initialize the refreshView and gestureDetector
         inflate(context, R.layout.view_custom_pull_to_refresh, this)
         refreshView = findViewById(R.id.refresh_view)
         gestureDetector = GestureDetector(context, RefreshGestureListener())
-        // Apply default settings
-        applyProgressBarAttributes()
     }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        // Automatically set the first child view as the content view
-        if (childCount > 0) {
-            val child = getChildAt(0)
+        // Automatically set the second child view as the content view (assuming the first is the ProgressBar)
+        if (childCount > 1) {
+            val child = getChildAt(1) // Get the actual content, ignoring the ProgressBar
             setInnerContentView(child)
         }
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        // Only intercept touch events if we are not refreshing and the gesture detector detects a scroll
+        // Intercept touch events only if not refreshing and the gesture detector detects a scroll
         val shouldIntercept = !isRefreshing && gestureDetector.onTouchEvent(ev)
         return shouldIntercept && super.onInterceptTouchEvent(ev)
     }
@@ -60,7 +63,7 @@ class CustomPullToRefreshLayout @JvmOverloads constructor(
 
     private inner class RefreshGestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDown(e: MotionEvent): Boolean {
-            return true
+            return true // Always return true to indicate that we want to receive the touch events
         }
 
         override fun onScroll(
@@ -70,10 +73,24 @@ class CustomPullToRefreshLayout @JvmOverloads constructor(
             distanceY: Float
         ): Boolean {
             if (!isRefreshing) {
+                // Check if the contentView can scroll vertically
                 val canScroll = ViewCompat.canScrollVertically(contentView, -1)
-                if (!canScroll && e1 != null && e2.y - e1.y > refreshView.height) {
-                    startRefreshing()
-                    return true
+                if (!canScroll && e1 != null && e2.y - e1.y > 0) {
+                    // Calculate the offset and cap it to the max pull-down offset
+                    var offset = e2.y - e1.y
+                    if (offset > maxPullDownOffset) {
+                        offset = maxPullDownOffset
+                    }
+
+                    // Move the content view down and maintain space between ProgressBar and contentView
+                    contentView?.translationY = offset
+                    refreshView.translationY = offset - spaceBetweenProgressBarAndContent
+
+                    // Start refreshing if the offset reaches the maxPullDownOffset
+                    if (offset == maxPullDownOffset) {
+                        startRefreshing()
+                        return true
+                    }
                 }
             }
             return false
@@ -82,21 +99,24 @@ class CustomPullToRefreshLayout @JvmOverloads constructor(
 
     private fun startRefreshing() {
         isRefreshing = true
-        refreshView.visibility = VISIBLE
         post {
-            // Center the ProgressBar programmatically if needed
-            applyProgressBarAttributes()
-            // Force layout update
+            // Make the ProgressBar visible and force a layout update
+            refreshView.visibility = VISIBLE
             requestLayout()
         }
+        // Notify the listener about the refresh event
         onRefreshListener?.invoke()
     }
 
     fun resetRefreshView() {
         isRefreshing = false
-        refreshView.visibility = GONE
         post {
-            // Force layout update
+            // Animate the contentView and ProgressBar back to their original positions
+            contentView?.animate()?.translationY(0f)?.setDuration(300)?.start()
+            refreshView.animate()?.translationY(0f)?.setDuration(300)?.start()
+            // Hide the ProgressBar and reset its alpha
+            refreshView.visibility = GONE
+            refreshView.alpha = 1f
             requestLayout()
         }
     }
@@ -105,52 +125,25 @@ class CustomPullToRefreshLayout @JvmOverloads constructor(
         onRefreshListener = listener
     }
 
-    private fun applyProgressBarAttributes() {
-        val layoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        )
-        layoutParams.gravity = progressBarGravity
-        refreshView.layoutParams = layoutParams
-        // Apply color filter
-        refreshView.indeterminateDrawable?.let {
-            it.setColorFilter(progressBarColor, android.graphics.PorterDuff.Mode.SRC_IN)
-        }
-
-        // Set size
-        val density = context.resources.displayMetrics.density
-        val sizeInPx = (progressBarSize * density).toInt()
-        refreshView.layoutParams.width = sizeInPx
-        refreshView.layoutParams.height = sizeInPx
-        refreshView.requestLayout()
-    }
-
-    fun setProgressBarColor(color: Int) {
-        progressBarColor = color
-        applyProgressBarAttributes()
-    }
-
-    fun setProgressBarSize(size: Int) {
-        progressBarSize = size
-        applyProgressBarAttributes()
-    }
-
-    fun setProgressBarStyle(style: Int) {
-        progressBarStyle = style
-        applyProgressBarAttributes()
-    }
-
-    fun setProgressBarGravity(gravity: Int) {
-        progressBarGravity = gravity
-        applyProgressBarAttributes()
-    }
-
-    fun setCustomProgressDrawable(drawableRes: Int) {
-        customProgressDrawableRes = drawableRes
-        applyProgressBarAttributes()
-    }
-
     private fun setInnerContentView(view: View) {
         contentView = view
+    }
+
+    // Method to set maxPullDownOffset dynamically
+    fun setMaxPullDownOffset(dp: Float) {
+        maxPullDownOffset = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        )
+    }
+
+    // Method to set space between ProgressBar and contentView dynamically
+    fun setSpaceBetweenProgressBarAndContent(dp: Float) {
+        spaceBetweenProgressBarAndContent = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        )
     }
 }
