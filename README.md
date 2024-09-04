@@ -55,7 +55,10 @@ customPullToRefresh.setCustomProgressDrawable(R.drawable.custom_drawable)
 
 ```
 
-https://github.com/user-attachments/assets/ce93c916-1d01-406d-9f74-09fc2b211924
+
+https://github.com/user-attachments/assets/0f528686-b0b9-4d9f-8f12-76b6810d3f7b
+
+
 
 ## Custom Attributes
 - setMaxPullDownOffset: Set maxPullDownOffset dynamically
