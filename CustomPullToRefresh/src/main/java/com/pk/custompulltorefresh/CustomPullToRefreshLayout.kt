@@ -1,6 +1,7 @@
 package com.pk.custompulltorefresh
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.GestureDetector
@@ -9,6 +10,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.core.view.ViewCompat
+import androidx.core.content.ContextCompat
 
 class CustomPullToRefreshLayout @JvmOverloads constructor(
     context: Context,
@@ -145,5 +147,14 @@ class CustomPullToRefreshLayout @JvmOverloads constructor(
             dp,
             resources.displayMetrics
         )
+    }
+
+    // Method to set a custom drawable for the ProgressBar
+    fun setCustomProgressBarDrawable(drawable: Drawable?) {
+        drawable?.let {
+            refreshView.indeterminateDrawable = it
+        } ?: run {
+            refreshView.indeterminateDrawable = ContextCompat.getDrawable(context, android.R.drawable.progress_indeterminate_horizontal)
+        }
     }
 }
