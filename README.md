@@ -45,6 +45,8 @@ customPullToRefresh.setOnRefreshListener {
     // Handle refresh logic here
 }
 
+customPullToRefresh.setMaxPullDownOffset(50f)
+customPullToRefresh.setSpaceBetweenProgressBarAndContent(50f)
 customPullToRefresh.setProgressBarColor(Color.RED)
 customPullToRefresh.setProgressBarSize(64) // Size in dp
 customPullToRefresh.setProgressBarStyle(1) // 0 for spinner, 1 for horizontal
@@ -52,12 +54,21 @@ customPullToRefresh.setProgressBarGravity(Gravity.BOTTOM or Gravity.END)
 customPullToRefresh.setCustomProgressDrawable(R.drawable.custom_drawable)
 
 ```
+
+
+https://github.com/user-attachments/assets/0f528686-b0b9-4d9f-8f12-76b6810d3f7b
+
+
+
 ## Custom Attributes
+- setMaxPullDownOffset: Set maxPullDownOffset dynamically
+- setSpaceBetweenProgressBarAndContent: Set space between ProgressBar and contentView dynamically
 - progressBarColor: Set the color of the progress bar.
 - progressBarSize: Set the size of the progress bar (in dp).
 - progressBarStyle: Set the style of the progress bar (0 for spinner, 1 for horizontal).
 - progressBarGravity: Set the gravity of the progress bar (e.g., Gravity.TOP | Gravity.CENTER_HORIZONTAL).
 - customProgressDrawable: Set a custom drawable resource for the progress bar.
+  
 ## Contributing
 
 Feel free to open issues and submit pull requests. Please make sure to follow the contributing guidelines.
