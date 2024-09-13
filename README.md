@@ -16,6 +16,17 @@ CustomPullToRefreshLayout is a customizable pull-to-refresh layout for Android. 
 
 ## Installation
 
+Gradle Settings
+```
+dependencyResolutionManagement {
+		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+		repositories {
+			mavenCentral()
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
 Gradle
 ```bash
  dependencies {
